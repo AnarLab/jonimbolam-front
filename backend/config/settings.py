@@ -100,6 +100,23 @@ FRONTEND_BASE_URL = os.environ.get("FRONTEND_BASE_URL", "http://localhost:3041")
 
 CORS_ALLOWED_ORIGINS = [FRONTEND_BASE_URL]
 
+# CSRF: allow POST from frontend/nginx origin(s)
+_csrf_from_env = [
+    v.strip()
+    for v in os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",")
+    if v.strip()
+]
+CSRF_TRUSTED_ORIGINS = list(
+    dict.fromkeys(
+        _csrf_from_env
+        or [
+            "http://localhost:8080",
+            "http://127.0.0.1:8080",
+            FRONTEND_BASE_URL,
+        ]
+    )
+)
+
 CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_CONFIGS = {
     "default": {
